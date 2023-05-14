@@ -37,7 +37,7 @@ export const StaffSchedule = () => {
     setFileName(file.name);
 
     const data = await file.arrayBuffer();
-    const workbook = XLSX.readFile(data, { sheetRows: 4 });
+    const workbook = XLSX.readFile(data);
 
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
@@ -175,19 +175,19 @@ export const StaffSchedule = () => {
         : <p> Максимальное пересечение = </p>
       }
 
-      <div>
+      {/* <div>
         <button onClick={handleOnCalculateTemp}>Рассчет TEMP</button>
-      </div>
+      </div> */}
 
       <div>
         <button onClick={handleOnExport}>Export</button>
       </div>
 
-      {fileName && (
+      {/* {fileName && (
         <p>
           FileName: <span>{fileName}</span>
         </p>
-      )}
+      )} */}
 
       <div>
         <input type="file" onChange={(e) => handleImport(e)}></input>
