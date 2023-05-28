@@ -1,6 +1,11 @@
 import { format } from "date-fns";
 import { ColumnFilter } from "./ColumnFilter";
 
+const handleCellClick = (e) => {
+  e.target.style.backgroundColor = "red";
+  console.log(e);
+};
+
 export const dataTable = () => {
   const headerCells = [];
   for (let h = 0; h < 24; h++) {
@@ -13,6 +18,11 @@ export const dataTable = () => {
       headerCells.push({
         Header: <span className="time-column">{formatDateString}</span>,
         accessor: formatDateString,
+        // getTdProps: (rowInfo) => {
+        //   return {
+        //     onClick: (event) => handleCellClick(event, rowInfo),
+        //   };
+        // },
       });
     }
   }
@@ -74,7 +84,7 @@ export const GROUPED_COLUMNS = [
         accessor: "full_name_of_the_employee",
       },
       {
-        Header: "Смена (hh:mm-hh:mm)",
+        Header: "Смена(hh:mm-hh:mm)",
         accessor: "shift",
       },
     ],
