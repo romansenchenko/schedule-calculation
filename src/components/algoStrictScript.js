@@ -137,7 +137,7 @@ export function scheduleBreaksStrictScript(
           timeToMinutes("11:30") <= minutes &&
           timeToMinutes("15:00") >= minutes
         ) {
-          //проверка для времени -15 и -30 минут
+          //проверка для времени -15 и -30 минут test
           const breaksCountMinus15min = Number(
             objOfMaxBreaks[minutesToTime(minutes - 15)]
           );
