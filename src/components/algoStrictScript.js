@@ -44,18 +44,23 @@ export function scheduleBreaksStrictScript(
 
   function generateFirstBreak() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       while (breaksCount > 0 && empID < employees.length) {
         if (!schedule[empID + 1]) {
           schedule[empID + 1] = {};
         }
-        schedule[empID + 1].firstBreak = {
-          start: minutesToTime(minutes),
-          end: minutesToTime(minutes + 15),
-        };
-        empID++;
-        breaksCount--;
+        if (
+          timeToMinutes(employees[empID].shift.split("-")[0]) + 60 <=
+          minutes
+        ) {
+          schedule[empID + 1].firstBreak = {
+            start: minutesToTime(minutes),
+            end: minutesToTime(minutes + 15),
+          };
+          empID++;
+          breaksCount--;
+        } else break;
       }
     }
     return schedule;
@@ -63,7 +68,7 @@ export function scheduleBreaksStrictScript(
 
   function generateSecondBreak() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -86,7 +91,7 @@ export function scheduleBreaksStrictScript(
 
   function generateThirdBreak() {
     let empID = employees.length - 1;
-    for (let minutes = 1440 - 15; minutes >= 0; minutes -= 15) {
+    for (let minutes = 1440 - 15; minutes >= 6 * 60; minutes -= 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -111,7 +116,7 @@ export function scheduleBreaksStrictScript(
 
   function generateLunchReverse() {
     let empID = employees.length - 1;
-    for (let minutes = 1440 - 15; minutes >= 0; minutes -= 15) {
+    for (let minutes = 1440 - 15; minutes >= 6 * 60; minutes -= 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -128,7 +133,9 @@ export function scheduleBreaksStrictScript(
 
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 90 <= minutes &&
-          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 60 >= minutes
+          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 60 >= minutes &&
+          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("15:00") >= minutes
         ) {
           //проверка для времени -15 и -30 минут
           const breaksCountMinus15min = Number(
@@ -170,7 +177,7 @@ export function scheduleBreaksStrictScript(
 
   function generateLunch() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -187,7 +194,9 @@ export function scheduleBreaksStrictScript(
 
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 45 <= minutes &&
-          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 90 >= minutes
+          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 90 >= minutes &&
+          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("14:45") >= minutes
         ) {
           //проверка для времени -15 и -30 минут
           const breaksCountPlus15min = Number(

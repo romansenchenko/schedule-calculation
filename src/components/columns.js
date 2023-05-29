@@ -8,7 +8,7 @@ const handleCellClick = (e) => {
 
 export const dataTable = () => {
   const headerCells = [];
-  for (let h = 0; h < 24; h++) {
+  for (let h = 6; h < 24; h++) {
     for (let m of ["00", "15", "30", "45"]) {
       const date = new Date(0, 0, 0, h, m, 0, 0); // создаем объект Date для каждого 15-минутного интервала
       const dateString = format(date, "HH:mm"); // преобразуем его в строку в формате HH:MM
@@ -84,7 +84,7 @@ export const GROUPED_COLUMNS = [
         accessor: "full_name_of_the_employee",
       },
       {
-        Header: "Смена(hh:mm-hh:mm)",
+        Header: "ВремяСмены",
         accessor: "shift",
       },
     ],

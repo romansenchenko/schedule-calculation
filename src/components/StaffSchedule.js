@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useTable } from "react-table";
 import MOCK_DATA from "./MOCK_DATA.json";
 import { GROUPED_COLUMNS } from "./columns";
-import "./table.css";
+import "./schedule.css";
 import * as XLSX from "xlsx";
 import { calculateBreaksModeling } from "./algoModel";
 import { simulatedAnnealing } from "./algoSimulated Annealing";
@@ -14,6 +14,10 @@ import {
   scheduleBreaksStrictScript,
   timeToMinutes,
 } from "./algoStrictScript";
+
+//убрать неправильные цвета для сумарной строчки
+//добавить еще две строчки
+//почему-то иногда залезает в запрещенное время на первый час смены или обед за обед
 
 export const StaffSchedule = () => {
   const columns = useMemo(() => GROUPED_COLUMNS, []);
@@ -95,9 +99,22 @@ export const StaffSchedule = () => {
   };
 
   const getTimeCellColor = (cellValue, shift, idEmp) => {
+    const lunchRangeColor = "#fcf8e3";
+    const breakColor = "yellow";
+    const lunchColor = "orange";
+    const offShiftColor = "#fae3e6"; //"#fcdee1";
+    const firstAndLastHourOfShiftColor = "#fab6bd";
+    const sumString = "#dff0e1";
+
     if (idEmp === data.length) {
       if (breaksSchedule === null) {
-        return "#dff0e1";
+        return sumString;
+      } else if (
+        cellValue === "id" ||
+        cellValue === "full_name_of_the_employee" ||
+        cellValue === "shift"
+      ) {
+        return sumString;
       } else {
         console.log(
           `Для времени ${cellValue} всего перерывов - ` +
@@ -109,7 +126,7 @@ export const StaffSchedule = () => {
         );
 
         if (Number(data[data.length - 1][cellValue]) === 0) {
-          return "#ddd";
+          return sumString;
         } else if (
           existingCountBreaks(timeToMinutes(cellValue), breaksSchedule) ===
           Number(data[data.length - 1][cellValue])
@@ -123,11 +140,6 @@ export const StaffSchedule = () => {
         } else return "red";
       }
     }
-    const lunchRangeColor = "#fcf8e3";
-    const breakColor = "yellow";
-    const lunchColor = "orange";
-    const offShiftColor = "#fae3e6"; //"#fcdee1";
-    const firstAndLastHourOfShiftColor = "#fab6bd";
 
     const [shiftStart, shiftEnd] = shift.split("-");
     const [hShiftStart, mShiftStart] = shiftStart.split(":");
@@ -317,63 +329,17 @@ export const StaffSchedule = () => {
 
   return (
     <>
-      {/* <div>
-        <button onClick={handleOnCalculateBreaksModeling}>
-          Рассчет по методу моделирования (некорректный)
-        </button>
-      </div>
-
-      <div>
-        <button onClick={handleOnLinearProgrammingMethod}>
-          Рассчет по методу линейного программирования
-        </button>
-      </div> */}
-
-      {/* <div>
-        <button onClick={handleSimulatedAnnealing}>
-          Рассчет по методу имитации отжига (уточнить условия)
-        </button>
-      </div> */}
-
-      {/* <div>
-        <button
-          style={{ fontSize: "16px", margin: "20px" }}
-          onClick={handleOnCalculateGenetic}
-        >
-          Рассчет с использованием генетического алгоритма
-        </button>
-      </div> */}
-
-      {/* {maximumIntersection !== null ? (
-        <p> Максимальное пересечение = {maximumIntersection} </p>
-      ) : (
-        <p> Максимальное пересечение = </p>
-      )} */}
-
-      <div>
-        <button
-          style={{ fontSize: "16px", margin: "10px" }}
-          onClick={handleOnScriptDirect}
-        >
-          Рассчет - обеды с начала
-        </button>
-      </div>
-
-      <div>
-        <button
-          style={{ fontSize: "16px", margin: "10px" }}
-          onClick={handleOnScriptReverse}
-        >
-          Рассчет - обеды с конца
-        </button>
-      </div>
       <br></br>
-      {/* <div>
-        <button onClick={handleOnCalculateTemp}>Рассчет TEMP</button>
-      </div> */}
 
       <div>
-        <button onClick={handleOnExport}>Export</button>
+        <input
+          className="input-file"
+          type="file"
+          onChange={(e) => handleImport(e)}
+        ></input>
+        <button className="exportImportBtn" onClick={handleOnExport}>
+          Export
+        </button>
       </div>
 
       {/* {fileName && (
@@ -382,9 +348,7 @@ export const StaffSchedule = () => {
         </p>
       )} */}
 
-      <div>
-        <input type="file" onChange={(e) => handleImport(e)}></input>
-      </div>
+      <div></div>
       <br></br>
 
       <table {...getTableProps()}>
@@ -437,6 +401,26 @@ export const StaffSchedule = () => {
         </tbody>
       </table>
       <br></br>
+
+      <div>
+        <button
+          className="generateBtn"
+          style={{ fontSize: "16px", margin: "10px" }}
+          onClick={handleOnScriptDirect}
+        >
+          Рассчет - обеды с начала
+        </button>
+      </div>
+
+      <div>
+        <button
+          className="generateBtn"
+          style={{ fontSize: "16px", margin: "10px" }}
+          onClick={handleOnScriptReverse}
+        >
+          Рассчет - обеды с конца
+        </button>
+      </div>
       <br></br>
     </>
   );
