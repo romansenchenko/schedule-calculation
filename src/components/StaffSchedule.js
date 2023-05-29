@@ -15,6 +15,10 @@ import {
   timeToMinutes,
 } from "./algoStrictScript";
 
+//убрать неправильные цвета для сумарной строчки
+//добавить еще две строчки
+//почему-то иногда залезает в запрещенное время на первый час смены или обед за обед
+
 export const StaffSchedule = () => {
   const columns = useMemo(() => GROUPED_COLUMNS, []);
   const [fileName, setFileName] = useState(null);
@@ -95,9 +99,22 @@ export const StaffSchedule = () => {
   };
 
   const getTimeCellColor = (cellValue, shift, idEmp) => {
+    const lunchRangeColor = "#fcf8e3";
+    const breakColor = "yellow";
+    const lunchColor = "orange";
+    const offShiftColor = "#fae3e6"; //"#fcdee1";
+    const firstAndLastHourOfShiftColor = "#fab6bd";
+    const sumString = "#dff0e1";
+
     if (idEmp === data.length) {
       if (breaksSchedule === null) {
-        return "#dff0e1";
+        return sumString;
+      } else if (
+        cellValue === "id" ||
+        cellValue === "full_name_of_the_employee" ||
+        cellValue === "shift"
+      ) {
+        return sumString;
       } else {
         console.log(
           `Для времени ${cellValue} всего перерывов - ` +
@@ -109,7 +126,7 @@ export const StaffSchedule = () => {
         );
 
         if (Number(data[data.length - 1][cellValue]) === 0) {
-          return "#ddd";
+          return sumString;
         } else if (
           existingCountBreaks(timeToMinutes(cellValue), breaksSchedule) ===
           Number(data[data.length - 1][cellValue])
@@ -123,11 +140,6 @@ export const StaffSchedule = () => {
         } else return "red";
       }
     }
-    const lunchRangeColor = "#fcf8e3";
-    const breakColor = "yellow";
-    const lunchColor = "orange";
-    const offShiftColor = "#fae3e6"; //"#fcdee1";
-    const firstAndLastHourOfShiftColor = "#fab6bd";
 
     const [shiftStart, shiftEnd] = shift.split("-");
     const [hShiftStart, mShiftStart] = shiftStart.split(":");

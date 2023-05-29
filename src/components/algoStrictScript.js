@@ -50,12 +50,17 @@ export function scheduleBreaksStrictScript(
         if (!schedule[empID + 1]) {
           schedule[empID + 1] = {};
         }
-        schedule[empID + 1].firstBreak = {
-          start: minutesToTime(minutes),
-          end: minutesToTime(minutes + 15),
-        };
-        empID++;
-        breaksCount--;
+        if (
+          timeToMinutes(employees[empID].shift.split("-")[0]) + 60 <=
+          minutes
+        ) {
+          schedule[empID + 1].firstBreak = {
+            start: minutesToTime(minutes),
+            end: minutesToTime(minutes + 15),
+          };
+          empID++;
+          breaksCount--;
+        } else break;
       }
     }
     return schedule;
@@ -128,7 +133,9 @@ export function scheduleBreaksStrictScript(
 
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 90 <= minutes &&
-          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 60 >= minutes
+          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 60 >= minutes &&
+          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("15:00") >= minutes
         ) {
           //проверка для времени -15 и -30 минут
           const breaksCountMinus15min = Number(
@@ -187,7 +194,9 @@ export function scheduleBreaksStrictScript(
 
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 45 <= minutes &&
-          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 90 >= minutes
+          timeToMinutes(schedule[empID + 1].thirdBreak.start) - 90 >= minutes &&
+          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("14:45") >= minutes
         ) {
           //проверка для времени -15 и -30 минут
           const breaksCountPlus15min = Number(
