@@ -44,7 +44,7 @@ export function scheduleBreaksStrictScript(
 
   function generateFirstBreak() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       while (breaksCount > 0 && empID < employees.length) {
         if (!schedule[empID + 1]) {
@@ -63,7 +63,7 @@ export function scheduleBreaksStrictScript(
 
   function generateSecondBreak() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -86,7 +86,7 @@ export function scheduleBreaksStrictScript(
 
   function generateThirdBreak() {
     let empID = employees.length - 1;
-    for (let minutes = 1440 - 15; minutes >= 0; minutes -= 15) {
+    for (let minutes = 1440 - 15; minutes >= 6 * 60; minutes -= 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -111,7 +111,7 @@ export function scheduleBreaksStrictScript(
 
   function generateLunchReverse() {
     let empID = employees.length - 1;
-    for (let minutes = 1440 - 15; minutes >= 0; minutes -= 15) {
+    for (let minutes = 1440 - 15; minutes >= 6 * 60; minutes -= 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;
@@ -170,7 +170,7 @@ export function scheduleBreaksStrictScript(
 
   function generateLunch() {
     let empID = 0;
-    for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
+    for (let minutes = 6 * 60; minutes < 24 * 60; minutes += 15) {
       let breaksCount = Number(objOfMaxBreaks[minutesToTime(minutes)]);
       let existingBreaks = existingCountBreaks(minutes, schedule);
       let remainingFreeBreaks = breaksCount - existingBreaks;

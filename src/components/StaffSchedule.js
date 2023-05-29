@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useTable } from "react-table";
 import MOCK_DATA from "./MOCK_DATA.json";
 import { GROUPED_COLUMNS } from "./columns";
-import "./table.css";
+import "./schedule.css";
 import * as XLSX from "xlsx";
 import { calculateBreaksModeling } from "./algoModel";
 import { simulatedAnnealing } from "./algoSimulated Annealing";
@@ -317,63 +317,17 @@ export const StaffSchedule = () => {
 
   return (
     <>
-      {/* <div>
-        <button onClick={handleOnCalculateBreaksModeling}>
-          Рассчет по методу моделирования (некорректный)
-        </button>
-      </div>
-
-      <div>
-        <button onClick={handleOnLinearProgrammingMethod}>
-          Рассчет по методу линейного программирования
-        </button>
-      </div> */}
-
-      {/* <div>
-        <button onClick={handleSimulatedAnnealing}>
-          Рассчет по методу имитации отжига (уточнить условия)
-        </button>
-      </div> */}
-
-      {/* <div>
-        <button
-          style={{ fontSize: "16px", margin: "20px" }}
-          onClick={handleOnCalculateGenetic}
-        >
-          Рассчет с использованием генетического алгоритма
-        </button>
-      </div> */}
-
-      {/* {maximumIntersection !== null ? (
-        <p> Максимальное пересечение = {maximumIntersection} </p>
-      ) : (
-        <p> Максимальное пересечение = </p>
-      )} */}
-
-      <div>
-        <button
-          style={{ fontSize: "16px", margin: "10px" }}
-          onClick={handleOnScriptDirect}
-        >
-          Рассчет - обеды с начала
-        </button>
-      </div>
-
-      <div>
-        <button
-          style={{ fontSize: "16px", margin: "10px" }}
-          onClick={handleOnScriptReverse}
-        >
-          Рассчет - обеды с конца
-        </button>
-      </div>
       <br></br>
-      {/* <div>
-        <button onClick={handleOnCalculateTemp}>Рассчет TEMP</button>
-      </div> */}
 
       <div>
-        <button onClick={handleOnExport}>Export</button>
+        <input
+          className="input-file"
+          type="file"
+          onChange={(e) => handleImport(e)}
+        ></input>
+        <button className="exportImportBtn" onClick={handleOnExport}>
+          Export
+        </button>
       </div>
 
       {/* {fileName && (
@@ -382,9 +336,7 @@ export const StaffSchedule = () => {
         </p>
       )} */}
 
-      <div>
-        <input type="file" onChange={(e) => handleImport(e)}></input>
-      </div>
+      <div></div>
       <br></br>
 
       <table {...getTableProps()}>
@@ -437,6 +389,26 @@ export const StaffSchedule = () => {
         </tbody>
       </table>
       <br></br>
+
+      <div>
+        <button
+          className="generateBtn"
+          style={{ fontSize: "16px", margin: "10px" }}
+          onClick={handleOnScriptDirect}
+        >
+          Рассчет - обеды с начала
+        </button>
+      </div>
+
+      <div>
+        <button
+          className="generateBtn"
+          style={{ fontSize: "16px", margin: "10px" }}
+          onClick={handleOnScriptReverse}
+        >
+          Рассчет - обеды с конца
+        </button>
+      </div>
       <br></br>
     </>
   );
