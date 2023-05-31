@@ -1,31 +1,43 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTable } from "react-table";
 import MOCK_DATA from "./MOCK_DATA.json";
 import { GROUPED_COLUMNS } from "./columns";
 import "./schedule.css";
 import * as XLSX from "xlsx";
-import { calculateBreaksModeling } from "./algoModel";
-import { simulatedAnnealing } from "./algoSimulated Annealing";
-import { scheduleBreaksGenetic } from "./algoGenetic";
-import { scheduleBreaksLinear } from "./algoLinearProgrammingMethod";
-import { scheduleBreaksGeneticTest } from "./algoGeneticCopy";
 import {
   existingCountBreaks,
   scheduleBreaksStrictScript,
   timeToMinutes,
 } from "./algoStrictScript";
 
-//убрать неправильные цвета для сумарной строчки
-//добавить еще две строчки
-//почему-то иногда залезает в запрещенное время на первый час смены или обед за обед
-
 export const StaffSchedule = () => {
   const columns = useMemo(() => GROUPED_COLUMNS, []);
-  const [fileName, setFileName] = useState(null);
   const mockData = useMemo(() => MOCK_DATA, []);
   const [data, setData] = useState(() => mockData);
   const [breaksSchedule, setBreaksSchedule] = useState(null);
-  const [maximumIntersection, setMaximumIntersection] = useState(null);
+
+  useEffect(() => {
+    setData((prevData) => {
+      const newData = [...prevData];
+      for (const key in newData[data.length - 1]) {
+        if (
+          key !== "id" &&
+          key !== "full_name_of_the_employee" &&
+          key !== "shift"
+        ) {
+          if (
+            newData[data.length - 3][key] !== "" ||
+            newData[data.length - 2][key] !== ""
+          ) {
+            newData[data.length - 1][key] =
+              Number(newData[data.length - 3][key]) +
+              Number(newData[data.length - 2][key]);
+          }
+        }
+      }
+      return newData;
+    });
+  }, [data[data.length - 3], data[data.length - 2]]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({
@@ -44,7 +56,6 @@ export const StaffSchedule = () => {
 
   const handleImport = async (e) => {
     const file = e.target.files[0];
-    setFileName(file.name);
     const data = await file.arrayBuffer();
     const workbook = XLSX.readFile(data);
 
@@ -54,33 +65,9 @@ export const StaffSchedule = () => {
     setData(jsonData);
   };
 
-  const handleOnCalculateBreaksModeling = (e) => {
-    setBreaksSchedule(calculateBreaksModeling(data));
-    console.log(calculateBreaksModeling(data));
-  };
-
-  const handleSimulatedAnnealing = (e) => {
-    setBreaksSchedule(simulatedAnnealing(data));
-    console.log(simulatedAnnealing(data));
-  };
-
-  const handleOnLinearProgrammingMethod = (e) => {
-    setBreaksSchedule(scheduleBreaksLinear(data));
-    console.log(scheduleBreaksLinear(data));
-  };
-
-  const handleOnCalculateGenetic = (e) => {
-    setBreaksSchedule(scheduleBreaksGenetic(data, setMaximumIntersection));
-    console.log(scheduleBreaksGenetic(data, setMaximumIntersection));
-  };
-
-  // const handleOnCalculateTemp = (e) => {
-  //   setBreaksSchedule(scheduleBreaksGeneticTest(data, setMaximumIntersection));
-  // };
-
   const handleOnScriptDirect = () => {
-    let employees = data.slice(0, data.length - 1);
-    let arrayOfMaxBreaks = data[data.length - 1];
+    let employees = data.slice(0, data.length - 3);
+    let arrayOfMaxBreaks = data[data.length - 3];
 
     scheduleBreaksStrictScript(employees, arrayOfMaxBreaks, true);
     setBreaksSchedule(
@@ -89,15 +76,16 @@ export const StaffSchedule = () => {
   };
 
   const handleOnScriptReverse = () => {
-    let employees = data.slice(0, data.length - 1);
-    let arrayOfMaxBreaks = data[data.length - 1];
+    let employees = data.slice(0, data.length - 3);
+    let arrayOfMaxBreaks = data[data.length - 3];
+    console.log(arrayOfMaxBreaks);
 
     scheduleBreaksStrictScript(employees, arrayOfMaxBreaks, false);
     setBreaksSchedule(
       scheduleBreaksStrictScript(employees, arrayOfMaxBreaks, false)
     );
   };
-  //test
+
   const getTimeCellColor = (cellValue, shift, idEmp) => {
     const lunchRangeColor = "#fcf8e3";
     const breakColor = "yellow";
@@ -106,7 +94,14 @@ export const StaffSchedule = () => {
     const firstAndLastHourOfShiftColor = "#fab6bd";
     const sumString = "#dff0e1";
 
+    if (idEmp === data.length - 1) {
+      return sumString;
+    }
     if (idEmp === data.length) {
+      return "#cadecc";
+    }
+
+    if (idEmp === data.length - 2) {
       if (breaksSchedule === null) {
         return sumString;
       } else if (
@@ -116,25 +111,25 @@ export const StaffSchedule = () => {
       ) {
         return sumString;
       } else {
-        console.log(
-          `Для времени ${cellValue} всего перерывов - ` +
-            data[data.length - 1][cellValue]
-        );
-        console.log(
-          `А по факту - ` +
-            existingCountBreaks(timeToMinutes(cellValue), breaksSchedule)
-        );
+        // console.log(
+        //   `Для времени ${cellValue} всего перерывов - ` +
+        //     data[data.length - 3][cellValue]
+        // );
+        // console.log(
+        //   `А по факту - ` +
+        //     existingCountBreaks(timeToMinutes(cellValue), breaksSchedule)
+        // );
 
-        if (Number(data[data.length - 1][cellValue]) === 0) {
+        if (Number(data[data.length - 3][cellValue]) === 0) {
           return sumString;
         } else if (
           existingCountBreaks(timeToMinutes(cellValue), breaksSchedule) ===
-          Number(data[data.length - 1][cellValue])
+          Number(data[data.length - 3][cellValue])
         ) {
           return "#4eff26";
         } else if (
           existingCountBreaks(timeToMinutes(cellValue), breaksSchedule) <
-          Number(data[data.length - 1][cellValue])
+          Number(data[data.length - 3][cellValue])
         ) {
           return "yellow";
         } else return "red";
@@ -149,7 +144,7 @@ export const StaffSchedule = () => {
     const dateCell = new Date(`01/01/2000 ${h1Cell}:${m1Cell}`);
     const dateShiftStart = new Date(`01/01/2000 ${hShiftStart}:${mShiftStart}`);
     const dateShiftEnd = new Date(2000, 0, 1, hShiftEnd, mShiftEnd);
-    const dateLunchRangeStart = new Date(2000, 0, 1, 11, 30);
+    const dateLunchRangeStart = new Date(2000, 0, 1, 11, 15);
     const dateLunchRangeEnd = new Date(2000, 0, 1, 15, 0);
 
     if (breaksSchedule === null) {
@@ -287,11 +282,24 @@ export const StaffSchedule = () => {
   const handleLeftClick = (cell) => {
     if (
       cell.column.parent.Header === "График" &&
-      cell.row.original.full_name_of_the_employee === "Сумма"
+      cell.row.original.full_name_of_the_employee === "Сумма перерывов для 5/2"
     ) {
       setData((prevState) =>
         prevState.map((obj, index) => {
-          //console.log(obj[cell.column.id]);
+          return index === Number(cell.row.id)
+            ? {
+                ...obj,
+                [cell.column.id]: String(Number(obj[cell.column.id]) + 1),
+              }
+            : obj;
+        })
+      );
+    } else if (
+      cell.column.parent.Header === "График" &&
+      cell.row.original.full_name_of_the_employee === "Сумма перерывов для 2/2"
+    ) {
+      setData((prevState) =>
+        prevState.map((obj, index) => {
           return index === Number(cell.row.id)
             ? {
                 ...obj,
@@ -307,11 +315,24 @@ export const StaffSchedule = () => {
     event.preventDefault();
     if (
       cell.column.parent.Header === "График" &&
-      cell.row.original.full_name_of_the_employee === "Сумма"
+      cell.row.original.full_name_of_the_employee === "Сумма перерывов для 5/2"
     ) {
       setData((prevState) =>
         prevState.map((obj, index) => {
-          //console.log(obj[cell.column.id]);
+          return index === Number(cell.row.id)
+            ? {
+                ...obj,
+                [cell.column.id]: String(Number(obj[cell.column.id]) - 1),
+              }
+            : obj;
+        })
+      );
+    } else if (
+      cell.column.parent.Header === "График" &&
+      cell.row.original.full_name_of_the_employee === "Сумма перерывов для 2/2"
+    ) {
+      setData((prevState) =>
+        prevState.map((obj, index) => {
           return index === Number(cell.row.id)
             ? {
                 ...obj,
