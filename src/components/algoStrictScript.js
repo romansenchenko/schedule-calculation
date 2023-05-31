@@ -134,7 +134,7 @@ export function scheduleBreaksStrictScript(
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 90 <= minutes &&
           timeToMinutes(schedule[empID + 1].thirdBreak.start) - 60 >= minutes &&
-          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("11:15") <= minutes &&
           timeToMinutes("15:00") >= minutes
         ) {
           //проверка для времени -15 и -30 минут test
@@ -195,7 +195,7 @@ export function scheduleBreaksStrictScript(
         if (
           timeToMinutes(schedule[empID + 1].secondBreak.end) + 45 <= minutes &&
           timeToMinutes(schedule[empID + 1].thirdBreak.start) - 90 >= minutes &&
-          timeToMinutes("11:30") <= minutes &&
+          timeToMinutes("11:15") <= minutes &&
           timeToMinutes("14:45") >= minutes
         ) {
           //проверка для времени -15 и -30 минут
